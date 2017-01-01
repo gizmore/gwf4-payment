@@ -6,6 +6,8 @@
  */
 abstract class GWF_PaymentModule extends GWF_Module
 {
+	public function payment() { return GWF_Module::getModule('Payment'); }
+	
 	################
 	### Abstract ###
 	################
@@ -13,7 +15,7 @@ abstract class GWF_PaymentModule extends GWF_Module
 	public abstract function getSiteNameToken();
 	public abstract function getSupportedCurrencies();
 	public abstract function displayPaysiteButton(GWF_Module $module, GWF_Order $order, GWF_Orderable $gdo, GWF_User $user);
-	public function canAfford($user, $price) { return $price > 0; }
+	public function canAfford(GWF_User $user, $price) { return $price > 0; }
 	
 	##################
 	### GWF_Module ###
@@ -29,8 +31,8 @@ abstract class GWF_PaymentModule extends GWF_Module
 				'fee_sell' => array('2.00', 'float', '-50', '50'),
 			));
 	}
-	public function cfgSiteFeeBuy() { return (float)$this->getModuleVar('fee_buy', '1.00'); }
-	public function cfgSiteFeeSell() { return (float)$this->getModuleVar('fee_sell', '2.00'); }
+	public function cfgSiteFeeBuy() { return (float)$this->getModuleVar('fee_buy', '0.00'); }
+	public function cfgSiteFeeSell() { return (float)$this->getModuleVar('fee_sell', '0.00'); }
 	
 //	public function onStartup()
 //	{
@@ -78,7 +80,8 @@ abstract class GWF_PaymentModule extends GWF_Module
 		foreach (self::$payment_modules as $module)
 		{
 			#$module instanceof GWF_PaymentModule;
-			if (!$module->canAfford($user, $price_total)) {
+			if (!$module->canAfford($user, $price_total))
+			{
 				continue;
 			}
 			$back .= self::displayPaymentButton($module);

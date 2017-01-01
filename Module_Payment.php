@@ -219,10 +219,10 @@ final class Module_Payment extends GWF_Module
 		
 		# Insert the order
 		require_once 'GWF_Order.php';
-		if (false === ($order = GWF_Order::insertOrder($module, $gdo, $paysite, $user, $price_total))) {
+		if (false === ($order = GWF_Order::insertOrder($module, $gdo, $paysite, $user, $price_total)))
+		{
 			return GWF_HTML::err('ERR_DATABASE', array( __FILE__, __LINE__));
 		}
-		
 		
 		$tVars = array(
 			'order' => $gdo->displayOrder($module),
@@ -346,5 +346,3 @@ final class Module_Payment extends GWF_Module
 		
 	}
 }
-
-?>
