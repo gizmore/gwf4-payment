@@ -287,30 +287,14 @@ final class Module_Payment extends GWF_Module
 	##################
 	### On Execute ###
 	##################
-	public static function onExecuteOrderS(GWF_Module $module, GWF_Order $order)
-	{
-		$mod_pay = Module_Payment::instance();
-		if (false === self::instance()->onExecuteOrder($module, $order)) {
-			return $mod_pay->error('err_crit', $order->getOrderToken());
-		}
-		return $mod_pay->message('msg_paid');
-	}
-	
 	public function onExecuteOrder(GWF_Module $module, GWF_Order $order)
 	{
-//		if (false === $order->saveVar('order_status', GWF_Order::PAID)) {
-//			return $this->logCriticalError($module, $order);
-//		}
-		
-		if (false === ($order->execute())) {
-			return $this->logCriticalError($module, $order);
+		$message = '';
+		if (!$order->execute($message))
+		{
+			return $message.$this->logCriticalError($module, $order);
 		}
-		
-//		if (false === $order->saveVar('order_status', GWF_Order::PROCESSED)) {
-//			return $this->logCriticalError($module, $order);
-//		}
-		
-		return $this->message('msg_paid');
+		return $this->message('msg_paid').$message;
 	}
 	
 	public function onPendingOrder(GWF_Module $module, GWF_Order $order)
@@ -318,13 +302,11 @@ final class Module_Payment extends GWF_Module
 		return $this->message('msg_pending');
 	}
 	
-	
 	private function logCriticalError(GWF_Module $module, GWF_Order $order)
 	{
 		$message = $this->error('err_crit', $order->getOrderToken());
 		GWF_Log::logCritical($message);
-		GWF_Website::addDefaultOutput($message);
-		return '';
+		return $message;
 	}
 	
 	################

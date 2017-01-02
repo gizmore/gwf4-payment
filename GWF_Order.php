@@ -76,13 +76,18 @@ final class GWF_Order extends GDO implements GWF_Sortable, GWF_Searchable
 	public function getOrderDescrAdmin() { return $this->getVar('order_descr_admin'); }
 	public function getOrderModulename() { return $this->getVar('order_module'); }
 	
+	public function displayOrderPrice() { return $this->displayPrice($this->getOrderPrice()); }
+	public function displayOrderPriceTotal() { return $this->displayPrice($this->getOrderPriceTotal()); }
+	public function displayPrice($price) { return sprintf('%.02f %s', $price, $this->getOrderCurrency()); }
+	
 	/**
 	 * @return GWF_Module
 	 */
 	public function getOrderModule()
 	{
 		$name = $this->getOrderModulename();
-		if (false === ($module = GWF_Module::loadModuleDB($name))) {
+		if (false === ($module = GWF_Module::loadModuleDB($name)))
+		{
 			echo GWF_HTML::err('ERR_MODULE_MISSING', array( GWF_HTML::display($name)));
 			return false;
 		}
@@ -99,7 +104,8 @@ final class GWF_Order extends GDO implements GWF_Sortable, GWF_Searchable
 	 */
 	public function getOrderData()
 	{
-		if (false === ($module = $this->getOrderModule())) {
+		if (false === ($module = $this->getOrderModule()))
+		{
 			return false;
 		}
 		$module->onInclude();
@@ -119,7 +125,8 @@ final class GWF_Order extends GDO implements GWF_Sortable, GWF_Searchable
 	 */
 	public function getUser()
 	{
-		if (false === ($user = $this->getVar('order_uid'))) {
+		if (false === ($user = $this->getVar('order_uid')))
+		{
 			return GWF_Guest::getGuest();
 		}
 		$user->loadGroups();
@@ -287,7 +294,8 @@ final class GWF_Order extends GDO implements GWF_Sortable, GWF_Searchable
 			'order_module' => $gdo->getOrderModuleName(),
 		));
 		
-		if (false === ($order->insert())) {
+		if (false === ($order->insert()))
+		{
 			return false;
 		}
 		
@@ -297,35 +305,48 @@ final class GWF_Order extends GDO implements GWF_Sortable, GWF_Searchable
 	###############
 	### Execute ###
 	###############
-	public function execute()
+	public function execute(&$message)
 	{
 		// We try to execute, so its paid!
 		if (false === $this->saveVars(array(
 			'order_status' => self::PAID,
 			'order_date_paid' => GWF_Time::getDate(GWF_Date::LEN_SECOND),
-		))) {
+		)))
+		{
+			$message = GWF_HTML::err('ERR_DATABASE', array(__FILE__, __LINE__));
 			return false;
 		}
 		
 		
-		if (false === ($data = $this->getOrderData())) {
+		if (false === ($data = $this->getOrderData()))
+		{
+			$message = GWF_HTML::err('ERR_GENERAL', array(__FILE__, __LINE__));
 			return false;
 		}
-		if (!($data instanceof GWF_Orderable)) {
+		
+		if (!($data instanceof GWF_Orderable))
+		{
+			$message = GWF_HTML::err('ERR_GENERAL', array(__FILE__, __LINE__));
 			return false;
 		}
 		
 		$module = $this->getOrderModule();
 		$module->onLoadLanguage();
-		if (false === $data->executeOrder($module, $this->getUser())) {
+		$message = '';
+		if (!$data->executeOrder($module, $this->getUser(), $message))
+		{
 			return false;
 		}
 		
 		// We executed, all done, thx!
-		return $this->saveVars(array(
+		if (!$this->saveVars(array(
 			'order_status' => self::PROCESSED,
-		));
+		)))
+		{
+			$message = GWF_HTML::err('ERR_DATABASE', array(__FILE__, __LINE__));
+			return false;
+		}
+		
+		return true;
 	}
 }
-
-?>

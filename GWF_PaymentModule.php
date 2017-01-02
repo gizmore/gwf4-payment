@@ -82,20 +82,27 @@ abstract class GWF_PaymentModule extends GWF_Module
 		{
 			if ($module->canAfford($user, $price_total) && $module->canOrder($user, $gdo))
 			{
-				$back .= self::displayPaymentButton($module);
+				$back .= $module->displayPaymentButton();
 			}
 		}
 		return $back;
 	}
 	
-	public static function displayPaymentButton(GWF_PaymentModule $module, $mode='2', $order_token=false)
+	public function paymentButtonHidden($order_token=false)
 	{
-		$i = ' style="display:inline;" ';
-		$token = $module->getSiteNameToken();
-		$action = GWF_HTML::display($_SERVER['REQUEST_URI']);
-		$hidden = GWF_Form::hidden('paysite', $token);
+		$hidden = GWF_Form::hidden('paysite', $this->getSiteNameToken());
 		$hidden .= $order_token === false ? '' : GWF_Form::hidden('gwf_order', $order_token);
-		$button = GWF_Form::buttonImage('on_order_'.$mode, sprintf('img/'.GWF_DEFAULT_DESIGN.'/buy_%s.png', $token));
-		return sprintf('<div%s><form%saction="%s" method="post"><div%s>%s%s</div></form></div>', $i, $i, $action, $i, $hidden, $button);
+		return $hidden;
+	}
+	
+	public function displayPaymentButton($step='2', $order_token=false)
+	{
+		$tVars = array(
+			'action' => GWF_HTML::display($_SERVER['REQUEST_URI']),
+			'hidden' => $this->paymentButtonHidden($order_token),
+			'button_name' => 'on_order_'.$step,
+			'site_token' => $this->getSiteNameToken(),
+		);
+		return $this->payment()->template('paybutton.php', $tVars);
 	}
 }
