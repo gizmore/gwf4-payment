@@ -123,15 +123,7 @@ final class GWF_Order extends GDO implements GWF_Sortable, GWF_Searchable
 	/**
 	 * @return GWF_User
 	 */
-	public function getUser()
-	{
-		if (false === ($user = $this->getVar('order_uid')))
-		{
-			return GWF_Guest::getGuest();
-		}
-		$user->loadGroups();
-		return $user;
-	}
+	public function getUser() { return GWF_User::getByID($this->getVar('user_id')); }
 	/**
 	 * @return GWF_PaymentModule
 	 */

@@ -43,8 +43,6 @@ final class Module_Payment extends GWF_Module
 	public function cfgDonations() { return $this->getModuleVarBool('donations', '1'); }
 	public function cfgCurrency() { return $this->getModuleVar('currency', 'EUR'); }
 	public function cfgCurrencies() { return explode(':', $this->getModuleVar('currencies', array('EUR:USD'))); }
-//	public function cfgLocalFeeBuy() { return $this->getModuleVar('local_fee_buy', 1.0); }
-//	public function cfgLocalFeeSell() { return $this->getModuleVar('local_fee_sell', 2.0); }
 	public function cfgGlobalFeeBuy() { return (float)$this->getModuleVar('global_fee_buy', 4.0); }
 	public function cfgGlobalFeeSell() { return (float)$this->getModuleVar('global_fee_sell', 8.0); }
 	public function cfgOrdersPerPage() { return $this->getModuleVarInt('orders_per_page', 50); }
@@ -100,7 +98,9 @@ final class Module_Payment extends GWF_Module
 		{
 			return GWF_HTML::err('ERR_GENERAL', array( __FILE__, __LINE__));
 		}
-		if (!($gdo->canOrder($user))) {
+
+		if (!($gdo->canOrder($user)))
+		{
 			return $this->error('err_can_order');
 		}
 		
@@ -109,8 +109,6 @@ final class Module_Payment extends GWF_Module
 		$fee_perc = $this->cfgGlobalFeeBuy();
 		$fee = round($price * $fee_perc / 100, 2);
 		$price_total = $price + $fee;
-		
-//		var_dump($price, $fee_perc, $fee, $price_total);
 		
 		$tVars = array(
 			'order' => $gdo->displayOrder($module),
@@ -307,13 +305,5 @@ final class Module_Payment extends GWF_Module
 		$message = $this->error('err_crit', $order->getOrderToken());
 		GWF_Log::logCritical($message);
 		return $message;
-	}
-	
-	################
-	### Donation ###
-	################
-	public static function displayDonateButton()
-	{
-		
 	}
 }

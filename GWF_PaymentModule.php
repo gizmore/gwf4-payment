@@ -21,7 +21,6 @@ abstract class GWF_PaymentModule extends GWF_Module
 	##################
 	### GWF_Module ###
 	##################
-//	public function getDefaultAutoLoad() { return true; }
 	public function getDefaultPriority() { return GWF_Module::DEFAULT_PRIORITY + 1; } # Start at least one later
 	public function getDependencies() { return array('Payment'=>1.00); }
 	public function onInstall($dropTable)
@@ -32,28 +31,8 @@ abstract class GWF_PaymentModule extends GWF_Module
 				'fee_sell' => array('2.00', 'float', '-50', '50'),
 			));
 	}
-	public function cfgSiteFeeBuy() { return (float)$this->getModuleVar('fee_buy', '0.00'); }
-	public function cfgSiteFeeSell() { return (float)$this->getModuleVar('fee_sell', '0.00'); }
-	
-//	public function onStartup()
-//	{
-//		if (false !== ($mod_payment = self::getModule('Payment'))) {
-//			$mod_payment->onInclude();
-//		}
-//		self::registerPaymentModule($this);
-//	}
-//	
-//	
-//	public function onRequest()
-//	{
-//		require_once 'GWF_Order.php';
-//		return parent::onRequest();
-//	}
-	
-//	public function onLoadLanguage()
-//	{
-//		return Module_Payment::instance()->onLoadLanguage();
-//	}
+	public function cfgSiteFeeBuy() { return $this->getModuleVarFloat('fee_buy', 0.0); }
+	public function cfgSiteFeeSell() { return $this->getModuleVarFöpat('fee_sell', 0.0); }
 	
 	#####################
 	### Accessability ###
@@ -80,6 +59,7 @@ abstract class GWF_PaymentModule extends GWF_Module
 		$user = GWF_User::getStaticOrGuest();
 		foreach (self::$payment_modules as $module)
 		{
+			$module->onLoadLanguage();
 			if ($module->canAfford($user, $price_total) && $module->canOrder($user, $gdo))
 			{
 				$back .= $module->displayPaymentButton();
