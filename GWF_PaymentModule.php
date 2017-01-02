@@ -16,6 +16,7 @@ abstract class GWF_PaymentModule extends GWF_Module
 	public abstract function getSupportedCurrencies();
 	public abstract function displayPaysiteButton(GWF_Module $module, GWF_Order $order, GWF_Orderable $gdo, GWF_User $user);
 	public function canAfford(GWF_User $user, $price) { return $price > 0; }
+	public function canOrder(GWF_User $user, GWF_Orderable $gdo) { return true; }
 	
 	##################
 	### GWF_Module ###
@@ -75,16 +76,14 @@ abstract class GWF_PaymentModule extends GWF_Module
 	
 	public static function displayPaymentButtons(GWF_Orderable $gdo, $price_total)
 	{
-		$user = GWF_Session::getUser();
 		$back = '';
+		$user = GWF_User::getStaticOrGuest();
 		foreach (self::$payment_modules as $module)
 		{
-			#$module instanceof GWF_PaymentModule;
-			if (!$module->canAfford($user, $price_total))
+			if ($module->canAfford($user, $price_total) && $module->canOrder($user, $gdo))
 			{
-				continue;
+				$back .= self::displayPaymentButton($module);
 			}
-			$back .= self::displayPaymentButton($module);
 		}
 		return $back;
 	}

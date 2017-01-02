@@ -19,12 +19,10 @@ final class Module_Payment extends GWF_Module
 	##################
 	### GWF_Module ###
 	##################
-	public function getVersion() { return 1.00; }
-	public function getPrice() { return 49.95; }
+	public function getVersion() { return 4.00; }
 	public function onLoadLanguage() { return $this->loadLanguage('lang/payment'); }
 	public function getClasses() { return array('GWF_Currency', 'GWF_Order', 'GWF_ShoppingCart'); }
 	public function getDefaultPriority() { return GWF_Module::DEFAULT_PRIORITY - 10; } # We might have deps
-//	public function getDefaultAutoLoad() { return true; }
 	public function onInstall($dropTable) { require_once 'install/GWF_PaymentInstall.php'; return GWF_PaymentInstall::install($this, $dropTable); }
 	public function onCronjob() { require_once('install/GWF_PaymentCronjob.php'); return GWF_PaymentCronjob::onCronjob($this); }
 	public function getAdminSectionURL() { return $this->getMethodURL('Staff'); }
@@ -37,15 +35,6 @@ final class Module_Payment extends GWF_Module
 		{
 			GWF_Module::loadModuleDB($modulename);
 		}
-//		$modules = GWF_Module::getModules();
-//		foreach ($modules as $name => $module)
-//		{
-//			if (Common::startsWith($name, 'Payment') && is_array($module))
-//			{
-//				GWF_Module::getModule($name, true);
-//			}
-//		}
-//		$this->onLoadLanguage();
 	}
 	
 	##############
