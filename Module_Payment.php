@@ -306,4 +306,25 @@ final class Module_Payment extends GWF_Module
 		GWF_Log::logCritical($message);
 		return $message;
 	}
+	
+	###############
+	### Sidebar ###
+	###############
+	public function sidebarContent($bar)
+	{
+		if ($bar === 'right')
+		{
+			return $this->templateSidebar();
+		}
+	}
+	
+	private function templateSidebar()
+	{
+		$this->onLoadLanguage();
+		$tVars = array(
+			'hrefHistory' => GWF_WEB_ROOT.'payments',
+		);
+		return $this->template('sidebar.php', $tVars);
+	}
+	
 }
