@@ -147,12 +147,13 @@ final class GWF_Order extends GDO implements GWF_Sortable, GWF_Searchable
 	####################
 	### GDO_Sortable ###
 	####################
-	public function getSortableDefaultBy(GWF_User $user) { return 'order_date_ordered'; }
-	public function getSortableDefaultDir(GWF_User $user) { return 'DESC'; }
-	public function getSortableFields(GWF_User $user)
+	public function getSortableDefaultBy() { return 'order_date_ordered'; }
+	public function getSortableDefaultDir() { return 'DESC'; }
+	public function getSortableFields($action)
 	{
-		if($user->isStaff())
+		switch ($action)
 		{
+			case 'staff':
 			return array(
 				'order_id',
 				'user_name',
@@ -163,18 +164,13 @@ final class GWF_Order extends GDO implements GWF_Sortable, GWF_Searchable
 				'order_date_ordered',
 				'order_status',
 				'order_date_paid',
-				'order_site',
 			);
-		}
-		else
-		{
+			case 'history':
 			return array(
-				'order_descr',
-				'order_date_ordered',
-				'order_price_total',
 				'order_date_paid',
+				'order_descr',
+				'order_price_total',
 				'order_status',
-				'order_email',
 			);
 		}
 	}
@@ -182,15 +178,16 @@ final class GWF_Order extends GDO implements GWF_Sortable, GWF_Searchable
 	######################
 	### GDO_Searchable ###
 	######################
-	public function getSearchableActions(GWF_User $user) { return array('order_qsearch', 'order_search'); }
-	public function getSearchableFields(GWF_User $user) { return $this->getColumnNamesExclusive(array('order_cartid')); }
+	public function getSearchableActions() { return array('order_qsearch', 'order_search'); }
+	public function getSearchableFields($action) { return $this->getColumnNamesExclusive(array('order_cartid')); }
 	public function getSearchableFormData(GWF_User $user) { return array(); }
 	
 	#######################
 	### GDO_Displayable ###
 	#######################
-	public function getDisplayableFields(GWF_User $user) { return $this->getColumnNamesExclusive(array('order_data', 'order_descr')); }
-	public function displayColumn(GWF_Module $module, GWF_User $user, $col_name)
+	public function payment() { return Module_Payment::instance(); }
+	public function getDisplayableFields($action) { return $this->getColumnNamesExclusive(array('order_data', 'order_descr')); }
+	public function displayColumn($col_name, $action='')
 	{
 		switch($col_name)
 		{
@@ -213,7 +210,7 @@ final class GWF_Order extends GDO implements GWF_Sortable, GWF_Searchable
 			
 			case 'order_status':
 				$status = $this->getVar('order_status');
-				$text = $module->lang('status_'.$status);
+				$text = $this->payment()->lang('status_'.$status);
 				switch($status)
 				{
 					case self::CREATED:

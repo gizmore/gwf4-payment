@@ -1,11 +1,8 @@
 <?php
 final class Payment_History extends GWF_Method
 {
-	public function getHTAccess()
-	{
-		return 'RewriteRule ^payments/?$ index.php?mo=Payment&me=History [QSA]'.PHP_EOL;
-	}
-	
+	public function getMethodHREF($app='') { return GWF_WEB_ROOT.'payments'.$app; }
+	public function getHTAccess() { return 'RewriteRule ^payments/?$ index.php?mo=Payment&me=History [QSA]'.PHP_EOL; }
 	public function execute()
 	{
 		if (true === isset($_POST['qsearch']))
@@ -30,8 +27,8 @@ final class Payment_History extends GWF_Method
 		$op2 = $o ? 'AND' : 'OR';
 		$conditions = "(order_status$op'$paid' $op2 order_status$op'$exec') and order_uid={$user->getID()}";
 		$bit = $o ? 'o' : 't';
-		$sortURL = $this->getMethodHref('&'.$bit.'=1&by=%BY%&dir=%DIR%');
-		return GWF_TableGDO::display($this->module, $orders, GWF_Session::getUser(), $sortURL, $conditions, 25, true, array('order_uid'));
+		$sortURL = $this->getMethodHref($bit.'=1&by=%BY%&dir=%DIR%');
+		return GWF_TableGDO::display('history', $this->module, $orders, GWF_Session::getUser(), $sortURL, $conditions, 25, true, array('order_uid'));
 	}
 
 	public function templateStaff()
@@ -39,10 +36,10 @@ final class Payment_History extends GWF_Method
 		$tVars = array(
 			'quicksearch' => $this->templateQuickSearch()->templateX($this->module->lang('ft_search')),
 			'table' => $this->getTable(),
-			'href_orders' => $this->getMethodHref(sprintf('&o=1&by=order_id&dir=DESC&page=1')),
-			'href_transactions' => $this->getMethodHref(sprintf('&t=1&by=order_id&dir=DESC&page=1')),
+			'href_orders' => $this->getMethodHref(sprintf('o=1&by=order_id&dir=DESC&page=1')),
+			'href_transactions' => $this->getMethodHref(sprintf('t=1&by=order_id&dir=DESC&page=1')),
 		);
-		return $this->module->templatePHP('history.php', $tVars);
+		return $this->module->template('history.php', $tVars);
 	}
 
 	private function onQuickSearch()
@@ -53,7 +50,7 @@ final class Payment_History extends GWF_Method
 			'href_orders' => $this->getMethodHref(sprintf('&o=1&by=order_id&dir=DESC&page=1')),
 			'href_transactions' => $this->getMethodHref(sprintf('&t=1&by=order_id&dir=DESC&page=1')),
 		);
-		return $this->module->templatePHP('history.php', $tVars);
+		return $this->module->template('history.php', $tVars);
 	}
 
 	private function getQuickSearchTable()
@@ -61,20 +58,16 @@ final class Payment_History extends GWF_Method
 		$user = GWF_User::getStaticOrGuest();
 		$orders = GDO::table('GWF_Order');
 		$orders instanceof GWF_Order;
-
 		$o = Common::getGet('o') !== false;
 		$bit = $o ? 'o' : 't';
-		$sortURL = $this->getMethodHref('&'.$bit.'=1&by=%BY%&dir=%DIR%');
-
-		$fields = $orders->getSearchableFields($user);
-
-		$term = Common::getRequestString('term', '');
-
+		$sortURL = $this->getMethodHref($bit.'=1&by=%BY%&dir=%DIR%');
+		$fields = $orders->getSearchableFields('qsearch_user');
+		$term = Common::getRequestString('term');
 		if (false === ($conditions = GWF_QuickSearch::getQuickSearchConditions($orders, $fields, $term)))
 		{
 			$conditions = '0';
 		}
-		return GWF_TableGDO::display($this->module, $orders, $user, $sortURL, $conditions, 25, true);
+		return GWF_TableGDO::display('history', $this->module, $orders, $user, $sortURL, $conditions, 25, true);
 	}
 }
 
