@@ -66,6 +66,6 @@ $lang = array(
 	'msg_pending' => 'Your transaction is pending. You will receive email with instructions, when the payment has been completed.',
 
 	'err_already_done' => 'Your order has been executed already.',
+	'th_order_descr' => 'Beschreibung',
+	'btn_payment_history' => 'Alte Zahlungen',
 );
-
-?>

@@ -65,8 +65,7 @@ $lang = array(
 
 	# Fixes
 	'msg_pending' => 'Ost on ootel. Kui valmis, saad emaili juhistega.',
-
 	'err_already_done' => 'Tellimus on sooritatud juba niigi.',
+	'th_order_descr' => 'Description',
+	'btn_payment_history' => 'Payment History',
 );
-
-?>

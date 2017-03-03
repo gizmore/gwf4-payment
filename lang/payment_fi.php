@@ -64,8 +64,7 @@ $lang = array(
 
 	# Fixes
 	'msg_pending' => 'Siirtoasi käsitellään. Saat sähköpostia, kun maksusi on suoritettu.',
-
 	'err_already_done' => 'Your order has been executed already.',
+	'th_order_descr' => 'Description',
+	'btn_payment_history' => 'Payment History',
 );
-
-?>

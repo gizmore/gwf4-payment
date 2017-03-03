@@ -66,6 +66,6 @@ $lang = array(
 	'msg_pending' => 'La sua transazione è in sospeso. Riceverà una E-Mail con le istruzioni, quando il pagamento verrà perfezionato.',
 
 	'err_already_done' => 'Il suo ordine è già stato eseguito.',
+	'th_order_descr' => 'Description',
+	'btn_payment_history' => 'Payment History',
 );
-
-?>
