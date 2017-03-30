@@ -14,8 +14,8 @@ final class GWF_PaymentInstall
 				'global_fee_buy' => array('4.00', 'float', '-50', '50'),
 				'global_fee_sell' => array('8.00', 'float', '-50', '50'),
 				'orders_per_page' => array('50', 'int', '1', '500'),
-			)).
-			self::installCurrencies($module, $dropTable);
+			));
+// 			self::installCurrencies($module, $dropTable);
 	}
 	
 	public static function installCurrencies(Module_Payment $module, $dropTable)
